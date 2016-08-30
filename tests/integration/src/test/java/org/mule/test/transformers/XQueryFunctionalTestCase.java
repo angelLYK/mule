@@ -23,10 +23,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore("MULE-10083:  The XMLUnit assertion at the end of this tests reqiures to instantiate a javax.xml.transform.TransformerFactory "
-  + "class, that class is found using SPI and results in org.apache.xalan.processor.TransformerFactoryImpl from Xalan."
-  + "Test runner classifies xalan as an app dependency, so Xalan jar will be in the app's CL. "
-  + "The problem is that CXF module, from the container, exports org.apache.xalan., making that package parent only."
-  + "This tests can't run if xalan is not properly placed in the container CL")
+    + "class, that class is found using SPI and results in org.apache.xalan.processor.TransformerFactoryImpl from Xalan."
+    + "Test runner classifies xalan as an app dependency, so Xalan jar will be in the app's CL. "
+    + "The problem is that CXF module, from the container, exports org.apache.xalan., making that package parent only."
+    + "This tests can't run if xalan is not properly placed in the container CL")
 public class XQueryFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Override
