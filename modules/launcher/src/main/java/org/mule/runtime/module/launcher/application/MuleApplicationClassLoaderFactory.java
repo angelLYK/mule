@@ -7,17 +7,23 @@
 package org.mule.runtime.module.launcher.application;
 
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppClassesFolder;
+import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy.PARENT_FIRST;
 import org.mule.runtime.core.util.SystemUtils;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
+import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
+import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy;
 import org.mule.runtime.module.artifact.classloader.DeployableArtifactClassLoaderFactory;
 import org.mule.runtime.module.launcher.MuleApplicationClassLoader;
 import org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.launcher.nativelib.NativeLibraryFinderFactory;
+import org.mule.runtime.module.launcher.plugin.ArtifactPluginDescriptor;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +47,23 @@ public class MuleApplicationClassLoaderFactory implements DeployableArtifactClas
                                     List<ArtifactClassLoader> artifactPluginClassLoaders) {
     List<URL> urls = getApplicationResourceUrls(descriptor);
 
-    //TODO(pablo.kraan): isolation - need to extend the lookup policy including the packages exported by the plugins
+    final ClassLoaderLookupPolicy classLoaderLookupPolicy = getApplicationClassLoaderLookupPolicy(parent, descriptor);
+
     return new MuleApplicationClassLoader(descriptor.getName(), parent.getClassLoader(),
                                           nativeLibraryFinderFactory.create(descriptor.getName()), urls,
-                                          parent.getClassLoaderLookupPolicy(), artifactPluginClassLoaders);
+                                          classLoaderLookupPolicy, artifactPluginClassLoaders);
+  }
+
+  private ClassLoaderLookupPolicy getApplicationClassLoaderLookupPolicy(ArtifactClassLoader parent,
+                                                                        ApplicationDescriptor descriptor) {
+    final Map<String, ClassLoaderLookupStrategy> pluginsLookupStrategies = new HashMap<>();
+    //TODO(pablo.kraan): isolation  - add unit test for the lookup policy generation
+    for (ArtifactPluginDescriptor artifactPluginDescriptor : descriptor.getPlugins()) {
+      artifactPluginDescriptor.getClassLoaderFilter().getExportedClassPackages()
+          .forEach(p -> pluginsLookupStrategies.put(p, PARENT_FIRST));
+    }
+
+    return parent.getClassLoaderLookupPolicy().extend(pluginsLookupStrategies);
   }
 
   private List<URL> getApplicationResourceUrls(ApplicationDescriptor descriptor) {

@@ -11,6 +11,7 @@ import static java.lang.System.setProperty;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -66,6 +67,8 @@ public class MuleApplicationClassLoaderFactoryTestCase extends AbstractMuleTestC
 
     classesFolderUrl = getAppClassesFolder(APP_NAME).toURI().toURL();
     appLibraryUrl = appLibrary.toURI().toURL();
+
+    when(classLoaderLookupPolicy.extend(anyMap())).thenReturn(classLoaderLookupPolicy);
   }
 
   @After
