@@ -109,6 +109,7 @@ public class IsolatedClassLoaderFactory {
     ArtifactClassLoader appClassLoader =
         createApplicationArtifactClassLoader(regionClassLoader, childClassLoaderLookupPolicy, artifactUrlClassification);
 
+    //TODO(pablo.kraan): isolation - application classloader must define the filter, similar to how is created on the real factory.
     regionClassLoader.addClassLoader(appClassLoader, NULL_CLASSLOADER_FILTER);
 
     for (int i = 0; i < filteredPluginsArtifactClassLoaders.size(); i++) {
