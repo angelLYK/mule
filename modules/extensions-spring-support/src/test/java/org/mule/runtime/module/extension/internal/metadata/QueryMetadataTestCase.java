@@ -73,7 +73,7 @@ public class QueryMetadataTestCase extends MetadataExtensionFunctionalTestCase {
     MetadataType generatedType = descriptor.getType();
     assertThat(generatedType, is(instanceOf(ArrayType.class)));
 
-    ObjectType fields = (ObjectType)((ArrayType) generatedType).getType();
+    ObjectType fields = (ObjectType) ((ArrayType) generatedType).getType();
     assertThat(fields.getFields(), hasSize(1));
     ObjectFieldType field = fields.getFields().iterator().next();
     assertThat(field.getKey().getName().getLocalPart(), is("id"));
